@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/style.css" />
+    <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://unpkg.com/elm-pep@1.0.6/dist/elm-pep.js"></script>
+    <!-- The lines below are only needed for old environments like Internet Explorer and Android 4.x -->
+    <script src="https://cdn.polyfill.io/v3/polyfill.min.js?features=fetch,requestAnimationFrame,Element.prototype.classList,TextDecoder"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.18.3/minified.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.min.js"></script>
+
+    <title>Approvisionnement en matériaux locaux</title>
+  </head>
+
+  <body>
+    <div id="fullscreen" class="fullscreen">
+      <header class="navbar">
+        <a class="navbar-brand" href=""><img src="" alt="">Approvisionnement en mat&eacuteriaux locaux en pierre naturelle
+        </a>
+      </header>
+
+      <div id="map" class="map">
+        <div id="popup" class="pop" title="Description du site"></div>
+        
+        <div id="popup2" class="pop" title="Solution approvisionnement">
+        </div>
+
+        <div id="popup3" class="pop" title="Solution approvisionnement alternative">
+        </div>
+
+      </div>
+
+      <div class="fond">
+        <button class="bouton fond grand" onclick="ouvrir()">Demarrage du module de calcul</button>
+      </div>
+
+      <div class="barre" id="barreNavig">
+
+        <div class="grid-container">
+
+          <div class="fond1">
+            <button class="bouton" onclick="fermer()">X</button>
+          </div>
+
+          <div class="grid-1">
+            <h2> Informations sur chantier </h2>
+              <p>
+                <label for="pseudo">Type ouvrage :</label>
+                <select name="typeouvrage" id="ouvrage">
+                  <option valeur="lauze">couverture</option>
+                  <option valeur="pierre à batir">mur de soutenement</option>
+                  <option valeur="pierre à batir">mur de s&eacuteparation</option>
+                </select>
+              </p>
+
+              <p>
+                <label for="pseudo1">Type de travaux:</label>
+                <select name = "typetravaux" id="travaux">
+                  <choix/>
+                    <option valeur="neuf">neuf</option>
+                    <option valeur="renovation"> r&eacutenovation</option>
+                </select>
+              </p>
+
+
+              <p>
+                <label for="pseudo2">Type de mat&eacuteriaux:</label>
+                <select name = "typemateriau" id="materiau">
+                  <choix/>
+                    <option valeur="calcaire">calcaire</option>
+                    <option valeur="schistes">schistes</option>
+                    <option valeur="granite">granite</option>
+                </select>
+              </p>
+
+              <p>
+                <label for="pseudo3">Type de chantier:</label>
+                <select name = "typechantier" id="chantier">
+                  <choix/>
+                    <option valeur="patrimonial">patrimonial</option>
+                    <option valeur="public">public</option>
+                    <option valeur="privé">privé</option>
+                </select>
+              </p>
+
+              <p>
+                <label for="pseudo4">Quantit&eacute souhait&eacutee:</label>
+                <input type="text" name="pseudo2" id="quantite" placeholder="Ex : 000000.0000" size="30" maxlength="10" />               
+                <span>m3 de lauze </span>
+              </p>
+
+              <label> Indiquer les coordonnées du chantier ou cliquer sur la carte pour localiser votre chantier </label>
+              <p>
+                <label for="pseudo5">Coordonn&eacutees X :</label>
+                <input type="number" name="pseudo3" id="x_chantier" placeholder="Ex : 000000.0000" size="30" maxlength="10" />
+              </p>
+
+              <p>
+                <label for="pseudo6">Coordonn&eacutees Y :</label>
+                <input type="number" name="pseudo4" id="y_chantier" placeholder="Ex : 000000.0000" size="30" maxlength="10" />
+              </p>
+
+              <p>
+                <button id="myBtn" class="favorite styled" type="button">
+                    Afficher la meilleure solution d'approvisionnement
+                </button>
+
+              </p>
+          </div>
+            
+          <div class="grid-2">
+            <div id="layertree">
+
+            <h2> Informations sur la ressource locale</h2>
+
+            <li>
+              <fieldset id="layer1">
+              <span>Ressource primaire</span>
+              </fieldset>
+              <ul>
+                <li>
+                  <fieldset id="layer10">
+                    <label class="checkbox" for="visible10">
+                      <span>Carrière</span>
+                      <input id="visible10" class="visible" type="checkbox"/>
+                    </label>
+                  </fieldset>
+                </li>
+
+                <li>
+                  <fieldset id="layer11">
+                    <label class="checkbox" for="visible11">
+                      <span>Gisement potentiel</span>
+                      <input id="visible11" class="visible" type="checkbox"/>
+                    </label>
+                  </fieldset>
+                </li>
+              </ul>
+            </li>
+
+            <li>
+              <fieldset id="layer2">
+                <span>Ressource secondaire</span>
+              </fieldset>
+              <ul>
+                <li>
+                  <fieldset id="layer20">
+                    <label class="checkbox" for="visible20">
+                      <span>Demolition de chantier</span>
+                      <input id="visible20" class="visible" type="checkbox"/>
+                    </label>
+                  </fieldset>
+                </li>
+                <li>
+                  <fieldset id="layer21">
+                    <label class="checkbox" for="visible21">
+                      <span>Terrassement</span>
+                      <input id="visible21" class="visible" type="checkbox"/>
+                    </label>
+                  </fieldset>
+                </li>
+                <li>
+                  <fieldset id="layer22">
+                    <label class="checkbox" for="visible22">
+                      <span>Stock de pierre</span>
+                      <input id="visible22" class="visible" type="checkbox"/>
+                    </label>
+                  </fieldset>
+                </li>
+              </ul>
+            </li>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="main.js"></script>
+    <!-- <script type="module" src="./calcul_solution.js"></script>-->
+  </body>
+
+  <script type="text/javascript" language="javascript">
+    function ouvrir()
+    {
+      document.getElementById("barreNavig").style.display="block";
+    }
+
+    function fermer()
+    {
+      document.getElementById("barreNavig").style.display="none";
+    }
+
+  </script>
+
+
+</html>
