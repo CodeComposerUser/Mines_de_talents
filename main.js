@@ -73,12 +73,31 @@ function pointStyleFunction(feature, resolution) {
     }),
   });
 }
+function pointStyleFunctionHover(feature, resolution) {
+  return new Style({
+    image: new CircleStyle({
+      radius: 10,
+      fill: new Fill({color: 'rgba(255, 0, 0, 0.4)'}),
+      stroke: new Stroke({color: 'red', width: 0.5}),
+    }),
+  });
+}
 
 //style des données gisement
 function pointStyleFunction2(feature, resolution) {
   return new Style({
     image: new CircleStyle({
       radius: 6,
+      fill: new Fill({color: 'rgba(0, 81, 220)'}),
+      stroke: new Stroke({color: 'blue', width: 0.5}),
+    }),
+  });
+}
+
+function pointStyleFunction2Hover(feature, resolution) {
+  return new Style({
+    image: new CircleStyle({
+      radius: 10,
       fill: new Fill({color: 'rgba(0, 81, 220)'}),
       stroke: new Stroke({color: 'blue', width: 0.5}),
     }),
@@ -159,6 +178,7 @@ map.addLayer(chantier)
 //rendre l'icone de chantier deplaçable
 
 map.on('click', (e) => {
+  e.Style = pointStyleFunctionHover;
   const pixel = map.getEventPixel(e.originalEvent);
   const hit = map.hasFeatureAtPixel(pixel);
   document.getElementById('map').style.cursor = hit ? 'pointer' : '';
@@ -212,18 +232,19 @@ const popup = new Overlay({
   element: element,
   positioning: 'bottom-center',
   stopEvent: false,
+
 });
 map.addOverlay(popup);
 
 // change mouse cursor when over marker
 map.on('pointermove', (e) => {
-
   const pixel = map.getEventPixel(e.originalEvent);
   const hit = map.hasFeatureAtPixel(pixel);
   document.getElementById('map').style.cursor = hit ? 'pointer' : '';
   
   const coordinate = e.coordinate;
   const feature = map.forEachFeatureAtPixel(e.pixel, function (feature) {
+    e.Style = pointStyleFunctionHover;
     return feature;
   });
   const element = popup.getElement();
@@ -250,6 +271,37 @@ map.on('pointermove', (e) => {
 // Close the popup when the map is moved
 map.on('movestart', function () {
   $(element).popover('dispose');
+});
+
+const selectStyle = new Style({
+  image: new Icon({
+    color: 'white',
+    scale: 0.05,
+    crossOrigin: 'anonymous',
+    src: 'image/marker.png'
+  })
+});
+
+const status = document.getElementById('status');
+
+let selected = null;
+map.on('pointermove', function (e) {
+  if (selected !== null) {
+    selected.setStyle(undefined);
+    selected = null;
+  }
+
+  map.forEachFeatureAtPixel(e.pixel, function (f) {
+    selected = f;
+    f.setStyle(selectStyle);
+    return true;
+  });
+
+  if (selected) {
+    status.innerHTML = selected.get('ECO_NAME');
+  } else {
+    status.innerHTML = '&nbsp;';
+  }
 });
 
 ////////////////////////////////calcul de la meilleure solution d'approvisionnement///////////////////////////////
